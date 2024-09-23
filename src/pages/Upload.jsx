@@ -2,37 +2,35 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Upload = () => {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.name.endsWith('.wpress')) {
-      setFile(selectedFile);
-    } else {
-      toast.error("Please select a valid .wpress file");
-      e.target.value = null;
-    }
+    const selectedFiles = Array.from(e.target.files);
+    setFiles(selectedFiles);
   };
 
   const handleUpload = () => {
-    if (file) {
-      // Here you would typically send the file to your server
-      // For now, we'll just show a success message
-      toast.success(`File ${file.name} uploaded successfully!`);
+    if (files.length > 0) {
+      // In a real scenario, you'd send these files to a server
+      // Here, we're just simulating the upload process
+      setUploadedFiles(files);
+      toast.success(`${files.length} file(s) uploaded successfully!`);
     } else {
-      toast.error("Please select a file first");
+      toast.error("Please select files first");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4">Upload .wpress File</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md mb-8">
+        <h1 className="text-2xl font-bold mb-4">Upload WordPress Files</h1>
         <Input 
           type="file" 
-          accept=".wpress" 
+          multiple
           onChange={handleFileChange} 
           className="mb-4"
         />
@@ -40,6 +38,23 @@ const Upload = () => {
           Upload
         </Button>
       </div>
+
+      {uploadedFiles.length > 0 && (
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Uploaded Files</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5">
+              {uploadedFiles.map((file, index) => (
+                <li key={index} className="text-sm">
+                  {file.name} ({file.type || 'unknown type'})
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
